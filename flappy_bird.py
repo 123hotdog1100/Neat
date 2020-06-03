@@ -17,8 +17,15 @@ PIPE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "pipe
 BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "base.png")))
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
 
-STAT_FONT = pygame.font.SysFont("Comicsans", 50)
-
+STAT_FONT = pygame.font.SysFont("Comicsans", 25)
+prompt = True
+while prompt:
+    try:
+        GOAL = int(input("What do you want the score goal to be? "))
+        prompt = False
+    except ValueError:
+        print("Please enter a number")
+        prompt = True
 
 class Bird:
     IMGS = BIRD_IMGS
@@ -163,12 +170,15 @@ def draw_window(win, birds, pipes, base, score, gen):
 
     text = STAT_FONT.render("Gen: " + str(gen), 1, (255, 255, 255))
     win.blit(text, (10, 10))
+
+    text = STAT_FONT.render("Birds: " + str(len(birds)), 1, (255, 255, 255))
+    win.blit(text, (10, 30))
     pygame.display.set_caption("Flappy bird neat program")
     pygame.display.update()
 
 
 def main(genomes, config):
-    global GEN
+    global GEN, GOAL
 
     GEN += 1
     nets = []
@@ -247,10 +257,11 @@ def main(genomes, config):
                 nets.pop(x)
                 ge.pop(x)
 
-        if score > 50:
+        if score > int(GOAL):
             break
         base.move()
         draw_window(win, birds, pipes, base, score, GEN)
+
 
 def run(conifg_path):
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
